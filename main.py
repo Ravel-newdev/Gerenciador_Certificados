@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from typing import Any
 from fastapi import HTTPException
-from random import randint
 import Schemas
 
 
@@ -25,7 +24,7 @@ TODO:
 }
 """
 #refatorar com oop depois, antes de criar certificados e eventos
-dados: Any=[
+dados: Any = [
     {
         "id_participante":1,
         "CPF":"555.555.555.55",
@@ -60,7 +59,7 @@ async def read_participante(id:int):
 
 @app.post("/participantes/adicionar")
 async def criar_participante(body: Schemas.Participante):
-    novo: Any = body
+    novo = body
     dados.append(novo)
     return{"participante":novo}
 
@@ -69,7 +68,7 @@ async def criar_participante(body: Schemas.Participante):
 async def editar_participantes(id: int, body: Schemas.Participante):
     for indice, participante in enumerate(dados):
         if participante.get("id_participante") == id:
-            atualizado: Any = body
+            atualizado: Schemas.Participante = body
             dados[indice]= atualizado
             return {"participante":atualizado}
     raise HTTPException(status_code=404)       
