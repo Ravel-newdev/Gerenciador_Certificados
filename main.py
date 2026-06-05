@@ -2,6 +2,9 @@ from fastapi import FastAPI
 from typing import Any
 from fastapi import HTTPException
 from random import randint
+import Schemas
+
+
 app = FastAPI(root_path="/api/versao1")
 """
 TODO:
@@ -41,9 +44,11 @@ dados: Any=[
 ]
 
 
+
 @app.get("/participantes")
 async def read_participantes():
     return {"participantes":dados}
+
 
 @app.get("/participantes/{id}")
 async def read_participante(id:int):
@@ -52,27 +57,19 @@ async def read_participante(id:int):
             return {"participantes":participante}
     raise HTTPException(status_code=404)
 
-@app.post("/participantes/adicionar") #depois preciso procurar uma forma mais rapida de testar os metodos, ta um saco adicionar cada campo manualmente
-async def criar_participante(body: dict[str,Any]):
-    novo: Any = {
-        "id_participante":randint(100,1000), #aleatorio apenas por enq, so pra nao adicionar mais um input de usuario
-        "CPF":body.get("CPF"),
-        "Nome":body.get("Nome"),
 
-    }
+@app.post("/participantes/adicionar")
+async def criar_participante(body: Schemas.Participante):
+    novo: Any = body
     dados.append(novo)
     return{"participante":novo}
 
-@app.put("/participantes/editar/{id}")
-async def editar_participantes(id: int,body: dict[str,Any]):
-    for indice, participante in enumerate(dados): #separa em (index,participante)
-        if participante.get("id_participante") == id:
-            atualizado: Any = {
-                "id_participante":id,
-                "CPF":body.get("CPF"),
-                "Nome":body.get("Nome"),
 
-            }
+@app.put("/participantes/editar/{id}")
+async def editar_participantes(id: int, body: Schemas.Participante):
+    for indice, participante in enumerate(dados):
+        if participante.get("id_participante") == id:
+            atualizado: Any = body
             dados[indice]= atualizado
             return {"participante":atualizado}
     raise HTTPException(status_code=404)       
