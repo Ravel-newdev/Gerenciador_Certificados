@@ -12,7 +12,7 @@ class Evento(BaseModel):
 
 class Participante(BaseModel):
     id_participante: str
-    cpf: Annotated[str, Query(max_length=11)]
+    cpf: Annotated[str, Query(pattern="^(?:\d{3}\.\d{3}\.\d{3}-\d{2}|\d{11})$")]
     nome: str
 
 class Certificado(BaseModel):
@@ -20,3 +20,4 @@ class Certificado(BaseModel):
     carga_horaria: str
     id_usuario: str
     id_evento: str
+    
