@@ -1,0 +1,31 @@
+.navbar{
+  background-color: #000C57;
+  color: white;
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar-logo{
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.navbar-links{
+  display: flex;
+  gap: 24px;
+}
+
+.navbar-links a{
+  color: white;
+  text-decoration: none;
+  font-family: 'Roboto', sans-serif;
+  font-size: 15px;
+  transition: color 0.2s;
+}
+
+.navbar-links a:hover{
+  color: var(--vermelho2);
+}

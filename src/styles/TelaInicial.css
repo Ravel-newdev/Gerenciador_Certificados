@@ -1,0 +1,51 @@
+.dashboard{
+  padding: 32px;
+}
+
+.dashboard h1{
+  font-family: 'Montserrat', sans-serif;
+  color: #000C57;
+  font-size: 26px;
+  margin-bottom: 8px;
+}
+
+.dashboard p{
+  color: #555;
+  margin-bottom: 32px;
+}
+
+.dashboard-cards{
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.card{
+  background-color: white;
+  border-radius: 10px;
+  padding: 28px;
+  width: 220px;
+  text-decoration: none;
+  color: #1A1A1A;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border-left: 5px solid #000C57;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.card h2{
+  font-family: 'Montserrat', sans-serif;
+  color: #000C57;
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.card p{
+  font-size: 13px;
+  color: #666;
+  margin: 0;
+}

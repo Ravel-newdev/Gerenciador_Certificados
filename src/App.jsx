@@ -9,7 +9,7 @@ function App() {
   return (
     <BrowserRouter>
       <Navbar />
-      <main style={{ padding: "24px", backgroundColor: "#F5F5F5", minHeight: "100vh" }}>
+      <main className="p-6 bg-[#F5F5F5] min-h-screen">
         <Routes>
           <Route path="/" element={<TelaInicial />} />
           <Route path="/certificados" element={<Certificados />} />

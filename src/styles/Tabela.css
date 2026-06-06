@@ -1,0 +1,75 @@
+.tabela-container{
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.tabela{
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--branco);
+}
+
+.tabela thead{
+  background-color: var(--azul);
+  color: var(--branco);
+}
+
+.tabela th, .tabela td{
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.tabela tbody tr:hover{
+  background-color: #f0f4ff;
+}
+
+.tabela-vazia{
+  text-align: center;
+  color: #888;
+  padding: 24px;
+}
+
+.tabela-acoes{
+  display: flex;
+  gap: 8px;
+}
+
+.btn-editar, .btn-deletar, .btn-pdf{
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'Roboto', sans-serif;
+  font-size: 13px;
+  transition: background-color 0.2s;
+}
+
+.btn-editar{
+  background-color: var(--azul);
+  color: white;
+}
+
+.btn-editar:hover{
+    background-color: var(--azul2); 
+}
+
+.btn-deletar{
+  background-color: var(--vermelho);
+  color: white;
+}
+
+.btn-deletar:hover{ 
+    background-color: var(--vermelho2); 
+}
+
+.btn-pdf{
+  background-color: #2e7d32;
+  color: white;
+}
+
+.btn-pdf:hover { 
+    background-color: #1b5e20; 
+}
