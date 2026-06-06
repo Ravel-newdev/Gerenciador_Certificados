@@ -44,9 +44,14 @@
    git clone https://github.com/Ravel-newdev/Gerenciador_Certificados.git
    cd Gerenciador_Certificados
 ```
-Configurar e Ativar o Backend:
 
-primeiro você acessa a pasta do backend, então cria o espaço virtual denominado venv, depois disso vai instalar as dependências necessarias ,proprias do requerimentos.txt , entao vai ligar o servidor de desenvolvimento para API rodar
+2. Configurar o Banco de dados:
+Crie um banco de dados no seu PostgreSQL
+Importe e depois execute o script SQL fornecido pelo PET
+
+3. Configurar e Ativar o Backend:
+
+primeiro você acessa a pasta do backend, então cria o espaço virtual denominado venv, depois disso vai  ativa-lo e instalar as dependências necessarias ,proprias do requerimentos.txt , entao vai ligar o servidor de desenvolvimento para API rodar
 
 ```Bash
    cd backend
@@ -58,10 +63,10 @@ primeiro você acessa a pasta do backend, então cria o espaço virtual denomina
 ````
 
 
-Configurar e Ativar o Frontend:
+4. Configurar e Ativar o Frontend:
 primeiro abri o arquivo do frontend , entao instala as dependencias do arquivo package.json , então inicia o servidor de desenvolvimento local
 
-## Passo a Passo
+## codigo
 
    ```bash
    cd frontend
