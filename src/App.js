@@ -4,7 +4,7 @@ import TelaInicial from "./pages/TelaInicial";
 import Certificados from "./pages/Certificados";
 import Eventos from "./pages/Eventos";
 import Participantes from "./pages/Participantes";
-
+import Footer from "./components/Footer";
 function App() {
   return (
     <BrowserRouter>
@@ -17,6 +17,7 @@ function App() {
           <Route path="/participantes" element={<Participantes />} />
         </Routes>
       </main>
+      <Footer/>
     </BrowserRouter>
   );
 }

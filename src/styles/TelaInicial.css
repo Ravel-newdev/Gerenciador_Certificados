@@ -1,22 +1,36 @@
-.dashboard{
-  padding: 32px;
+.home {
+  margin: -24px;
 }
 
-.dashboard h1{
+.hero {
+  background-color: var(--azul);
+  padding: 80px 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.hero-conteudo h1 {
   font-family: 'Montserrat', sans-serif;
-  color: #000C57;
-  font-size: 26px;
-  margin-bottom: 8px;
+  color: white;
+  font-size: 32px;
+  margin-bottom: 16px;
+  max-width: 600px;
 }
 
-.dashboard p{
-  color: #555;
-  margin-bottom: 32px;
+.hero-conteudo p {
+  color: #aab4d4;
+  font-size: 16px;
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.6;
 }
 
 .dashboard-cards{
+  padding: 30px;
   display: flex;
-  gap: 24px;
+  gap: 60px;
   flex-wrap: wrap;
 }
 
@@ -24,7 +38,7 @@
   background-color: white;
   border-radius: 10px;
   padding: 28px;
-  width: 220px;
+  width: 350px;
   text-decoration: none;
   color: #1A1A1A;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -40,12 +54,12 @@
 .card h2{
   font-family: 'Montserrat', sans-serif;
   color: #000C57;
-  font-size: 18px;
+  font-size: 30px;
   margin-bottom: 8px;
 }
 
 .card p{
-  font-size: 13px;
+  font-size: 20px;
   color: #666;
   margin: 0;
 }

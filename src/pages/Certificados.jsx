@@ -21,6 +21,7 @@ function Certificados() {
     id_usuario: "",
     id_evento: "",
     carga_horaria: "",
+    pdf: null,
   });
 
   function abrirModalCriar() {
@@ -49,31 +50,32 @@ function Certificados() {
   }
 
   function handleSubmit(e) {
-    e.preventDefault();
-    if (certificadoEditando) {
-      // editar certificados
-      setCertificados(certificados.map((c) =>
-        c.id === certificadoEditando.id ? { ...c, ...form } : c
-      ));
-    } else {
-      // criar certificados
-      const novo = { id: Date.now(), participante: "—", evento: "—", ...form };
-      setCertificados([...certificados, novo]);
-    }
-    fecharModal();
+  e.preventDefault();
+
+  const formData = new FormData();
+  formData.append("id_usuario", form.id_usuario);
+  formData.append("id_evento", form.id_evento);
+  formData.append("carga_horaria", form.carga_horaria);
+  if (form.pdf) {
+    formData.append("pdf", form.pdf);
   }
+
+  console.log("Dados a enviar:", [...formData.entries()]);
+  fecharModal();
+  //só fecha o modal, dps muda isso na api
+}
 
   function handleDeletar(id) {
     if (window.confirm("Tem certeza que deseja deletar este certificado?")) {
       setCertificados(certificados.filter((c) => c.id !== id));
     }
   }
-
+  function handleArquivo(e) {
+  setForm({ ...form, pdf: e.target.files[0] });
+  }
   function handlePDF(item) {
-    // por enquanto só avisa, implementamos depois
     alert(`Gerar PDF do certificado #${item.id}`);
   }
-
   return (
     <div className="pagina">
       <div className="pagina-header">
@@ -111,7 +113,6 @@ function Certificados() {
                   required
                 />
               </label>
-
               <label>
                 ID do Evento
                 <input
@@ -123,7 +124,6 @@ function Certificados() {
                   required
                 />
               </label>
-
               <label>
                 Carga Horária (h)
                 <input
@@ -134,6 +134,15 @@ function Certificados() {
                   placeholder="Ex: 20"
                   required
                 />
+              </label>
+              <label>
+                Certificado em PDF
+                <input
+                  type="file"
+                  accept=".pdf"
+                  onChange={handleArquivo}
+                />
+                {form.pdf && (<span className="pdf-selecionado">📄 {form.pdf.name}</span>)}
               </label>
 
               <div className="modal-botoes">

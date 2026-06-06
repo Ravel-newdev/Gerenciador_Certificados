@@ -1,11 +1,15 @@
 import { Link } from "react-router-dom";
 import "../styles/TelaInicial.css";
- 
+
 function TelaInicial() {
   return (
-    <div className="dashboard">
-      <h1>Bem-vindo ao sistema de certificados</h1>
-      <p>Gerencie eventos, participantes e certificados do PET Computação.</p>
+    <div className="home">
+      <div className="hero">
+        <div className="hero-conteudo">
+          <h1>Sistema de Gerenciamento de Certificados</h1>
+          <p>Gerencie eventos, participantes e certificados de forma simples e rápida.</p>
+        </div>
+      </div>
 
       <div className="dashboard-cards">
         <Link to="/eventos" className="card">
