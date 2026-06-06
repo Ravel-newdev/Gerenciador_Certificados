@@ -11,9 +11,9 @@
 
 -**Banco de Dados:** PostgreSQL
 
--**autenticação:** Pydantic
+-**Validação dos dados:** Pydantic
 
--**ORM**: SQLmodel
+-**ORM/Banco de dados**: SQLmodel
 
 -**Ferramentas de Design:** Figma
 
@@ -46,6 +46,8 @@
 ```
 Configurar e Ativar o Backend:
 
+primeiro você acessa a pasta do backend, então cria o espaço virtual denominado venv, depois disso vai instalar as dependências necessarias ,proprias do requerimentos.txt , entao vai ligar o servidor de desenvolvimento para API rodar
+
 ```Bash
    cd backend
 
@@ -54,9 +56,10 @@ Configurar e Ativar o Backend:
    pip install -r requirements.txt
    uvicorn main:app --reload
 ````
-primeiro você acessa a pasta do backend, então cria o espaço virtual denominado venv, depois disso vai instalar as dependências necessarias ,proprias do requerimentos.txt , entao vai ligar o servidor de desenvolvimento para API rodar
+
 
 Configurar e Ativar o Frontend:
+primeiro abri o arquivo do frontend , entao instala as dependencias do arquivo package.json , então inicia o servidor de desenvolvimento local
 
 ## Passo a Passo
 
@@ -65,5 +68,5 @@ Configurar e Ativar o Frontend:
    npm install 
    npm start
    ```
-abrir o arquivo do frontend , entao instala as dependencias do arquivo package.json , então inicia o servidor de desenvolvimento local
+
 
