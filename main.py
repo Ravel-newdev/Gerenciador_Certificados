@@ -1,7 +1,7 @@
-from fastapi import FastAPI, Depends
+from contextlib import asynccontextmanager
+from fastapi import FastAPI, Depends, Response,HTTPException
 from json import JSONEncoder # pyright: ignore[reportUnusedImport]
 from typing import Any, Annotated # pyright: ignore[reportUnusedImport]
-from fastapi import HTTPException
 import Schemas
 from Model import engine, SQLModel, create_table_and_bd, get_session, Session, Usuario, select, Evento, Certificado # pyright: ignore[reportUnusedImport]
 
@@ -167,5 +167,14 @@ async def editar_participantes(id: int, usuario: Schemas.Participante, session: 
     except:
         raise HTTPException(status_code=404)
       
-
+@app.delete("/participantes/{id}")
+async def deletar_participante(id:int, usuario: Schemas.Participante, session: SessionDep):
+    try:
+        declaracao = select(Usuario).where(Usuario.id == id)
+        dado = session.exec(declaracao)
+        del dado #deleta objeto
+        return Response (status_code=204)
+        
+    except:
+        raise HTTPException(status_code=404)
 
