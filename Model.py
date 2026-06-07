@@ -26,7 +26,6 @@ class Certificado(SQLModel, table=True):
     data_do_fim: date = Field()
 
 
-
 engine = create_engine(echo=True)
 
 def create_table_and_bd(engine):
