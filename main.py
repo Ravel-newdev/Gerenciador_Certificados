@@ -1,8 +1,9 @@
 from fastapi import FastAPI, Depends
+from json import JSONEncoder
 from typing import Any, Annotated
 from fastapi import HTTPException
 import Schemas
-from Model import engine, SQLModel, create_table_and_bd, get_session, Session, Usuario, select
+from Model import engine, SQLModel, create_table_and_bd, get_session, Session, Usuario, select, Evento, Certificado
 
 app = FastAPI(root_path="/api/versao1")
 
@@ -31,31 +32,86 @@ TODO:
 SessionDep = Annotated[Session, Depends(get_session)]
 
 @app.get("/certificados")
-async def certificados():
-    return None 
+async def certificados(id_usuario: int, id_evento: int, session: SessionDep):
+    try:
+        statement = select(Certificado).where(Certificado.id_usuario == id_usuario and Certificado.id_evento == id_evento)
+        queries = session.exec(statement)
+        certificadosDoUsuario = queries.all()
+
+    except:
+        return HTTPException(status_code=404)
+    
+    else:
+        return certificadosDoUsuario
 
 @app.get("/eventos")
-async def eventos():
-    return None 
+async def eventos(session: SessionDep):
+    try:
+        statement = select(Evento)
+        object_eventos = session.exec(statement)
+        events = object_eventos.all()
+        
+    except:
+        return HTTPException(status_code=404)
+    
+    else:
+        return events
 
-@app.get("/eventos/editar")
-async def editar_eventos():
-    return None
+@app.get("/eventos/editar/{id}")
+async def editar_eventos(id: int, evento: Schemas.Evento, session: SessionDep):
+    try:
+        statement = select(Evento).where(Evento.id == id)
+        events = session.exec(statement)
+        event = events.one()
+        event.texto = evento.texto
+        event.titulo = evento.titulo
+        event.data_inicio = evento.data_inicio
+        event.data_fim = evento.data_fim
+        session.add(event)
+        session.commit()
+        session.close()
+
+    except:
+        return HTTPException(status_code=404)
+    
 
 @app.get("/certificados/editar")
-async def editar_certificado():
-    return None 
+async def editar_certificado(id: int, session: SessionDep, certificado: Schemas.Certificado):
+    try:
+        certificado_que_quero_editar = session.get(Certificado, id)
+        certificado_que_quero_editar.id_usuario = certificado.id_usuario
+        certificado_que_quero_editar.id_evento = certificado.id_evento
+        session.add(certificado_que_quero_editar)
+        session.commit()
+        session.close()
+    
+    except:
+        return HTTPException(status_code=404)
+
+    
 
 @app.get("/certificados/adicionar")
-async def adicionar_certificado():
-    return None
+async def adicionar_certificado(certificado: Schemas.Certificado, session: SessionDep):
+    try:
+        objeto_certificado = Certificado.model_validate(certificado)
+        session.add(objeto_certificado)
+        session.commit()
 
-
+    except:
+        raise HTTPException(status_code=404)
 
 @app.get("/participantes")
 async def read_participantes(session: SessionDep):
-    pass
-    
+    try:
+        statement = select(Usuario)
+        users = session.exec(statement)
+        lista_usuarios = users.all()
+        
+    except:
+        raise HTTPException(status_code=500)
+
+    else:
+        return lista_usuarios
 
 
 @app.get("/participantes/{id}")
@@ -63,6 +119,7 @@ async def read_participante(id:int, session: SessionDep):
     try:
         declaracao = select(Usuario).where(Usuario.id == id)
         dado = session.exec(declaracao)
+        dado = dado.one()
         
     except:
         raise HTTPException(status_code=404)
@@ -72,18 +129,31 @@ async def read_participante(id:int, session: SessionDep):
 
 @app.post("/participantes/adicionar")
 async def criar_participante(usuario: Schemas.Participante, session: SessionDep):
-    usuario_db = Usuario.model_validate(usuario)
-    session.add(usuario_db)
-    session.commit()
-    session.refresh(usuario_db)
-    session.close()
-    return usuario
+    try:
+        usuario_db = Usuario.model_validate(usuario)
+        session.add(usuario_db)
+        session.commit()
+        session.refresh(usuario_db)
+        session.close()
+    except:
+        raise HTTPException(status_code=500)
+    else:
+        return usuario
 
 
 @app.put("/participantes/editar/{id}")
 async def editar_participantes(id: int, usuario: Schemas.Participante, session: SessionDep):
-    
-    
-    raise HTTPException(status_code=404)       
+    try:
+        statement = select(Usuario).where(Usuario.id == id)
+        users = session.exec(statement)
+        user = users.one()
+        user.nome = usuario.nome
+        user.cpf = usuario.cpf
+        session.add(user)
+        session.commit()
+        session.close()
+    except:
+        raise HTTPException(status_code=404)
+      
 
 

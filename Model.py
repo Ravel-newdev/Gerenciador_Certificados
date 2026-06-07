@@ -6,7 +6,7 @@ import Schemas
 
 
 
-class Usuario(SQLModel, Schemas.Usuario, table=True):
+class Usuario(SQLModel, Schemas.Participante, table=True):
     id: int | None = Field(description="id do usuario", primary_key=True)
 
 
