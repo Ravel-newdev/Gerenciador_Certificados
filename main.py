@@ -4,6 +4,7 @@ from typing import Any, Annotated # pyright: ignore[reportUnusedImport]
 from fastapi import HTTPException
 import Schemas
 from Model import engine, SQLModel, create_table_and_bd, get_session, Session, Usuario, select, Evento, Certificado # pyright: ignore[reportUnusedImport]
+from contextlib import asynccontextmanager
 
 app = FastAPI(root_path="/api/versao1")
 
