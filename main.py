@@ -2,9 +2,21 @@ from fastapi import FastAPI
 from typing import Any
 from fastapi import HTTPException
 import Schemas
+<<<<<<< HEAD
 
 
 app = FastAPI(root_path="/api/versao1")
+=======
+from Model import engine, SQLModel, create_table_and_bd
+
+app = FastAPI(root_path="/api/versao1")
+
+
+@app.on_event("startup")
+def on_startup():
+    create_table_and_bd(engine)
+    
+>>>>>>> nicolas
 """
 TODO:
 -Exclusao participante
