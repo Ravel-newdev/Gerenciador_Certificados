@@ -44,7 +44,24 @@ async def lifespan(app:FastAPI):
             ])
     yield
 
-@app.get("/certificados")
+
+@app.get("/")
+async def pagina_inicial():
+    pass
+
+@app.get("/Certificados")
+async def pagina_certificados():
+    pass
+
+@app.get("/Participantes")
+async def pagina_participantes():
+    pass
+
+@app.get("/Eventos")
+async def pagina_eventos():
+    pass
+
+@app.get("/certificados/all")
 async def certificados(id_usuario: int, id_evento: int, session: SessionDep):
     try:
         statement = select(Certificado).where(Certificado.id_usuario == id_usuario and Certificado.id_evento == id_evento)
@@ -57,7 +74,7 @@ async def certificados(id_usuario: int, id_evento: int, session: SessionDep):
     else:
         return certificadosDoUsuario
 
-@app.get("/eventos")
+@app.get("/eventos/all")
 async def eventos(session: SessionDep):
     try:
         statement = select(Evento)
@@ -113,7 +130,7 @@ async def adicionar_certificado(certificado: Schemas.Certificado, session: Sessi
     except:
         raise HTTPException(status_code=404)
 
-@app.get("/participantes")
+@app.get("/participantes/all")
 async def read_participantes(session: SessionDep):
     try:
         statement = select(Usuario)
