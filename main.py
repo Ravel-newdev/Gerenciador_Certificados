@@ -1,9 +1,9 @@
 from fastapi import FastAPI, Depends
-from json import JSONEncoder
-from typing import Any, Annotated
+from json import JSONEncoder # pyright: ignore[reportUnusedImport]
+from typing import Any, Annotated # pyright: ignore[reportUnusedImport]
 from fastapi import HTTPException
 import Schemas
-from Model import engine, SQLModel, create_table_and_bd, get_session, Session, Usuario, select, Evento, Certificado
+from Model import engine, SQLModel, create_table_and_bd, get_session, Session, Usuario, select, Evento, Certificado # pyright: ignore[reportUnusedImport]
 
 app = FastAPI(root_path="/api/versao1")
 
@@ -30,6 +30,18 @@ TODO:
 #refatorar com oop depois, antes de criar certificados e eventos
 
 SessionDep = Annotated[Session, Depends(get_session)]
+
+@asynccontextmanager
+async def lifespan(app:FastAPI):
+    create_table_and_bd()
+    with Session(engine) as session:
+        if not session.exec(select(Usuario)).first():
+            session.add.all([ 
+                Usuario(CPF="1234",Nome="Nicolas"),
+                Usuario(CPF="5678",Nome="vinicius")
+                
+            ])
+    yield
 
 @app.get("/certificados")
 async def certificados(id_usuario: int, id_evento: int, session: SessionDep):
