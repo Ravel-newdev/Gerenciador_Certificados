@@ -20,7 +20,7 @@ class Evento(SQLModel, table=True):
 
 
 class Certificado(SQLModel, table=True):
-    id: UUID = Field()
+    id: UUID = Field(primary_key=True)
     carga_horaria: int = Field() 
     data_de_inicio: date = Field()
     data_do_fim: date = Field()
@@ -31,3 +31,11 @@ engine = create_engine(echo=True)
 
 def create_table_and_bd(engine):
     SQLModel.metadata.create_all(engine)
+
+def get_session():
+    with Session(engine) as session:
+        yield session
+
+
+
+

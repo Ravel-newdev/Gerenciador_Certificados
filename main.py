@@ -1,15 +1,12 @@
-from fastapi import FastAPI
-from typing import Any
+from fastapi import FastAPI, Depends
+from typing import Any, Annotated
 from fastapi import HTTPException
 import Schemas
-from Model import engine, SQLModel, create_table_and_bd
+from Model import engine, SQLModel, create_table_and_bd, get_session, Session, Usuario
 
 app = FastAPI(root_path="/api/versao1")
 
 
-@app.on_event("startup")
-def on_startup():
-    create_table_and_bd(engine)
     
 """
 TODO:
@@ -48,11 +45,13 @@ dados: Any = [
 
 ]
 
-
+SessionDep = Annotated[Session, Depends(get_session)]
 
 @app.get("/participantes")
-async def read_participantes():
-    return {"participantes":dados}
+async def read_participantes(usuario: Usuario, session: SessionDep):
+    session.exec()
+    return usuario
+    
 
 
 @app.get("/participantes/{id}")
@@ -64,10 +63,11 @@ async def read_participante(id:int):
 
 
 @app.post("/participantes/adicionar")
-async def criar_participante(body: Schemas.Participante):
-    novo = body
-    dados.append(novo)
-    return{"participante":novo}
+async def criar_participante(session: SessionDep, usuario: Usuario, body: Schemas.Participante):
+    session.add(usuario)
+    session.commit()
+    session.refresh(usuario)
+    return usuario
 
 
 @app.put("/participantes/editar/{id}")
