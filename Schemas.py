@@ -1,23 +1,20 @@
 from pydantic import BaseModel
 from fastapi import Query
 from typing import Annotated
-from random import randint
+from datetime import date
 
 class Evento(BaseModel):
-    id: str
     texto: str
     titulo: str
-    data_inicio: str
-    data_fim: str
+    data_inicio: date
+    data_fim: date
 
 class Participante(BaseModel):
-    id_participante: str
     cpf: Annotated[str, Query(pattern="^(?:\d{3}\.\d{3}\.\d{3}-\d{2}|\d{11})$")]
     nome: str
 
 class Certificado(BaseModel):
-    id: str
-    carga_horaria: str
-    id_usuario: str
-    id_evento: str
-    
+    carga_horaria: int
+    id_usuario: int
+    id_evento: int
+
