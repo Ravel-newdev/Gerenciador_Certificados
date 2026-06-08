@@ -29,6 +29,7 @@
 
 ## funcionalidades:
 **Frontend**: 
+
 . eventos - Checar, listar ,adicionar ,modificar dados dos eventos e remover
 
 . Participantes - Checar, listar ,adicionar ,modificar dados dos participantes e remover
@@ -36,6 +37,7 @@
 . Certificados -  Checar,adicionar ,remover ,listar e modificar os dados
 
 **Backend**:
+
 . vai por meio do FastApi criar Endpoints para enviar, consultar, atualizar e deletar dados
 
 . Persistir dados dos Eventos, Participantes e Certificados no banco de dados
