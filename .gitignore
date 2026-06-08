@@ -1,21 +1,16 @@
-<<<<<<< HEAD
-__pycache__/
-.venv/
-.vscode/
-=======
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
 /node_modules
 /.pnp
 .pnp.js
-
+__pycache__/
 # testing
 /coverage
-
+.env
 # production
 /build
-
+teste.py
 # misc
 .DS_Store
 .env.local
@@ -26,4 +21,3 @@ __pycache__/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
->>>>>>> frontend

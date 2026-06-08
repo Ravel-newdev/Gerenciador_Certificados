@@ -3,10 +3,14 @@ from fastapi import FastAPI, Depends, Response,HTTPException
 from json import JSONEncoder # pyright: ignore[reportUnusedImport]
 from typing import Any, Annotated # pyright: ignore[reportUnusedImport]
 import Schemas
+import os
+
+import pathlib
+from fastapi.responses import FileResponse
 from Model import engine, SQLModel, create_table_and_bd, get_session, Session, Usuario, select, Evento, Certificado # pyright: ignore[reportUnusedImport]
 from contextlib import asynccontextmanager
 
-app = FastAPI(root_path="/api/versao1")
+
 
 
     
@@ -30,36 +34,23 @@ TODO:
 """
 #refatorar com oop depois, antes de criar certificados e eventos
 
+
 SessionDep = Annotated[Session, Depends(get_session)]
 
 @asynccontextmanager
 async def lifespan(app:FastAPI):
-    create_table_and_bd()
+    create_table_and_bd(engine)
     with Session(engine) as session:
         if not session.exec(select(Usuario)).first():
-            session.add.all([ 
-                Usuario(CPF="1234",Nome="Nicolas"),
-                Usuario(CPF="5678",Nome="vinicius")
+            session.add_all([ 
+                Usuario(cpf="1234",nome="Nicolas"),
+                Usuario(cpf="5678",nome="vinicius")
                 
             ])
     yield
 
 
-@app.get("/")
-async def pagina_inicial():
-    pass
-
-@app.get("/Certificados")
-async def pagina_certificados():
-    pass
-
-@app.get("/Participantes")
-async def pagina_participantes():
-    pass
-
-@app.get("/Eventos")
-async def pagina_eventos():
-    pass
+app = FastAPI(root_path="/api/versao1", lifespan=lifespan)
 
 @app.get("/certificados/all")
 async def certificados(id_usuario: int, id_evento: int, session: SessionDep):
@@ -87,7 +78,7 @@ async def eventos(session: SessionDep):
     else:
         return events
 
-@app.get("/eventos/editar/{id}")
+@app.put("/eventos/editar/{id}")
 async def editar_eventos(id: int, evento: Schemas.Evento, session: SessionDep):
     try:
         statement = select(Evento).where(Evento.id == id)
@@ -105,7 +96,7 @@ async def editar_eventos(id: int, evento: Schemas.Evento, session: SessionDep):
         return HTTPException(status_code=404)
     
 
-@app.get("/certificados/editar")
+@app.put("/certificados/editar")
 async def editar_certificado(id: int, session: SessionDep, certificado: Schemas.Certificado):
     try:
         certificado_que_quero_editar = session.get(Certificado, id)
@@ -120,7 +111,7 @@ async def editar_certificado(id: int, session: SessionDep, certificado: Schemas.
 
     
 
-@app.get("/certificados/adicionar")
+@app.post("/certificados/adicionar")
 async def adicionar_certificado(certificado: Schemas.Certificado, session: SessionDep):
     try:
         objeto_certificado = Certificado.model_validate(certificado)
@@ -164,11 +155,12 @@ async def criar_participante(usuario: Schemas.Participante, session: SessionDep)
         session.add(usuario_db)
         session.commit()
         session.refresh(usuario_db)
-        session.close()
-    except:
-        raise HTTPException(status_code=500)
+    except Exception as e:
+        print(e)
+        session.rollback()
+        raise HTTPException(status_code=500, detail="Erro ao salvar no banco")
     else:
-        return usuario
+        return usuario_db
 
 
 @app.put("/participantes/editar/{id}")
