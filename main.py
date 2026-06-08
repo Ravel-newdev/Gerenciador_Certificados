@@ -1,13 +1,9 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Depends, Response,HTTPException
-from json import JSONEncoder # pyright: ignore[reportUnusedImport]
-from typing import Any, Annotated # pyright: ignore[reportUnusedImport]
+from fastapi import FastAPI, Depends,HTTPException
+from typing import Annotated
 import Schemas
 from fastapi.middleware.cors import CORSMiddleware
-import pathlib
-from fastapi.responses import FileResponse
-from Model import engine, SQLModel, create_table_and_bd, get_session, Session, Usuario, select, Evento, Certificado # pyright: ignore[reportUnusedImport]
-from contextlib import asynccontextmanager
+from Model import engine, create_table_and_bd, get_session, Session, Usuario, select, Evento, Certificado 
 
 
 
@@ -44,7 +40,8 @@ async def eventos(session: SessionDep):
         object_eventos = session.exec(statement)
         events = object_eventos.all()
         
-    except:
+    except Exception as e:
+        print("Erro ao buscar todos os eventos: ", e)
         return HTTPException(status_code=404)
     
     else:
@@ -163,7 +160,8 @@ async def read_participantes(session: SessionDep):
         users = session.exec(statement)
         lista_usuarios = users.all()
         
-    except:
+    except Exception as e:
+        print("Erro ao buscar participantes: ", e)
         raise HTTPException(status_code=500)
 
     else:
@@ -177,7 +175,8 @@ async def read_participante(id:int, session: SessionDep):
         dado = session.exec(declaracao)
         dado = dado.one()
         
-    except:
+    except Exception as e:
+        print("Erro ao buscar participante: ", e)
         raise HTTPException(status_code=404)
     else:
         return dado
@@ -210,7 +209,8 @@ async def editar_participantes(id: int, usuario: Schemas.Participante, session: 
         session.add(user)
         session.commit()
         session.close()
-    except:
+    except Exception as e:
+        print("Erro ao editar participante: ", e)
         raise HTTPException(status_code=404)
       
 @app.delete("/participantes/{id}")
@@ -220,6 +220,7 @@ async def deletar_participante(id:int, session: SessionDep):
         session.delete(dado)
         session.commit()
         
-    except:
+    except Exception as e:
+        print("Erro ao deletar participante: ", e)
         raise HTTPException(status_code=404)
 
