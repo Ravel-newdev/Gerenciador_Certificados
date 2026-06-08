@@ -1,70 +1,84 @@
-# Getting Started with Create React App
+<<<<<<< HEAD
+# PET Certificados- Sistema web de gerenciamento de certificados, participantes e eventos
+>## projeto direcionado para o Processo seletivo do PET da Computação da Universidade Federal do Ceára
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
 
-In the project directory, you can run:
+## Tecnologias e Ferramentas:
 
-### `npm start`
+-**Frontend:** React , Javascript
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+-**Backend (API REST):** FastApi , python
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+-**Banco de Dados:** MySQL(Base de dados `banco_ps`)
 
-### `npm test`
+-**Validação dos dados:** Pydantic
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+-**ORM/Banco de dados**: SQLmodel
 
-### `npm run build`
+-**Ferramentas de Design:** Figma
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## funcionalidades:
+**Frontend**: 
+. eventos - Checar, listar ,adicionar ,modificar dados dos eventos e remover
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+. Participantes - Checar, listar ,adicionar ,modificar dados dos participantes e remover
 
-### `npm run eject`
+. Certificados -  Checar,adicionar ,remover ,listar e modificar os dados
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+**Backend**:
+. vai por meio do FastApi criar Endpoints para enviar, consultar, atualizar e deletar dados
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+. Persistir dados dos Eventos, Participantes e Certificados no banco de dados
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Como Rodar o Projeto Localmente:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Pré-requisitos:
+* Python 3.10 ou superior instalado
+* MySKL
+* Nodejs
 
-## Learn More
+### Passo a Passo:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+1. **Clonar o repositório:**
+```bash
+   git clone https://github.com/Ravel-newdev/Gerenciador_Certificados.git
+   cd Gerenciador_Certificados
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+2. Configurar o Banco de dados:
+Crie um banco de dados denominado banco_ps no seu MySQL
+Importe e depois execute o script SQL fornecido pelo PET,
+crie um arquivo .env no backend e coloque essa informações:
+USUARIO = seu usuario do MySKL
+SENHA = sua senha do MySQL 
+HOST = localhost      
+PORTA = 3306         
+BANCO = banco_ps
 
-### Code Splitting
+4. Configurar e Ativar o Backend:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+primeiro no seu terminal do proprio windows ou no aplicativo de programação que você usa, irá acessar a pasta do backend, então cria o espaço virtual denominado venv, depois disso vai  ativa-lo e instalar as dependências necessarias ,proprias do requerimentos.txt , entao vai ligar o servidor de desenvolvimento(Uvicorn) para API rodar
 
-### Analyzing the Bundle Size
+```Bash
+   cd backend
+   
+   python -m venv venv
+   .\venv\Scripts\activate 
+   pip install -r requirements.txt
+   uvicorn main:app --reload
+````
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
 
-### Making a Progressive Web App
+4. Configurar e Ativar o Frontend:
+primeiro por meio de outro terminal , irá abrir o arquivo do frontend , entao instala as dependencias do arquivo package.json , então inicia o servidor de desenvolvimento local do react
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## codigo
 
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+   ```bash
+   cd frontend
+   npm install
+   npm build
+   npm start
+   ```
