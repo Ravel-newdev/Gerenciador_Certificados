@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Tabela from "../components/Tabela";
 
 const colunas = [
@@ -9,15 +9,31 @@ const colunas = [
   { key: "data_fim", label: "Data de Finalização" },
 ];
 
-const dadosMock = [
-  { id: 1, titulo: "SAC XX", texto: "Semana Acadêmica", data_inicio: "2025-09-20", data_fim: "2025-09-25" },
-];
-
 function Eventos() {
-  const [eventos, setEventos] = useState(dadosMock);
+  const [eventos, setEventos] = useState([]);
   const [modalAberto, setModalAberto] = useState(false);
   const [editando, setEditando] = useState(null);
   const [form, setForm] = useState({ titulo: "", texto: "", data_inicio: "", data_fim: "" });
+
+  useEffect(() => {
+    carregarEventos();
+  }, []);
+
+  async function carregarEventos() {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/versao1/eventos/all");
+      if (response.ok) {
+        const dados = await response.json();
+        const dadosFormatados = dados.map((ev) => ({
+          ...ev,
+          id: ev.id_evento, 
+        }));
+        setEventos(dadosFormatados);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar eventos:", error);
+    }
+  }
 
   function abrirModalCriar() {
     setEditando(null);
@@ -40,21 +56,46 @@ function Eventos() {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    if (editando) {
-      setEventos(eventos.map((ev) =>
-        ev.id === editando.id ? { ...ev, ...form } : ev
-      ));
-    } else {
-      setEventos([...eventos, { id: Date.now(), ...form }]);
+    try {
+      if (editando) {
+        await fetch(`http://127.0.0.1:8000/api/versao1/eventos/editar/${editando.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form)
+        });
+      } else {
+        await fetch("http://127.0.0.1:8000/api/versao1/eventos/adicionar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form)
+        });
+      }
+      
+      carregarEventos(); 
+      fecharModal();
+    } catch (error) {
+      console.error("Erro ao salvar:", error);
+      alert("Erro ao salvar evento.");
     }
-    fecharModal();
   }
 
-  function handleDeletar(id) {
+  async function handleDeletar(id) {
     if (window.confirm("Tem certeza que deseja deletar este evento?")) {
-      setEventos(eventos.filter((ev) => ev.id !== id));
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/api/versao1/eventos/${id}`, {
+          method: "DELETE"
+        });
+        
+        if (response.ok) {
+          setEventos(eventos.filter((ev) => ev.id !== id));
+        } else {
+          alert("Erro ao deletar o evento.");
+        }
+      } catch (error) {
+        console.error("Erro ao deletar:", error);
+      }
     }
   }
 

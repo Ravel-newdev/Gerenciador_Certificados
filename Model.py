@@ -26,14 +26,14 @@ class Usuario(SQLModel, table=True):
 
 
 class Evento(SQLModel, table=True):
-    id_evento: int | None = Field(primary_key=True)
+    id_evento: int | None = Field(default=None, primary_key=True)
     texto: str
     titulo: str
     data_inicio: date
     data_fim: date
 
 class Certificado(SQLModel, table=True):
-    id_certificado: int | None = Field(primary_key=True)
+    id_certificado: int | None = Field(default=None, primary_key=True)
     carga_horaria: int
     id_usuario: int
     id_evento: int

@@ -3,36 +3,13 @@ from fastapi import FastAPI, Depends, Response,HTTPException
 from json import JSONEncoder # pyright: ignore[reportUnusedImport]
 from typing import Any, Annotated # pyright: ignore[reportUnusedImport]
 import Schemas
-import os
-
+from fastapi.middleware.cors import CORSMiddleware
 import pathlib
 from fastapi.responses import FileResponse
 from Model import engine, SQLModel, create_table_and_bd, get_session, Session, Usuario, select, Evento, Certificado # pyright: ignore[reportUnusedImport]
 from contextlib import asynccontextmanager
 
 
-
-
-    
-"""
-TODO:
--Exclusao participante
--EVENTO{
--ID
--TEXTO
--TITULO
--DATA_INICIO
--DATA_FIM
-}
-
--CERTIFICADO{
--ID
--CARGA_HORARIA
--ID_PARTICIPANTE
--ID_EVENTO
-}
-"""
-#refatorar com oop depois, antes de criar certificados e eventos
 
 
 SessionDep = Annotated[Session, Depends(get_session)]
@@ -52,18 +29,13 @@ async def lifespan(app:FastAPI):
 
 app = FastAPI(root_path="/api/versao1", lifespan=lifespan)
 
-@app.get("/certificados/all")
-async def certificados(id_usuario: int, id_evento: int, session: SessionDep):
-    try:
-        statement = select(Certificado).where(Certificado.id_usuario == id_usuario and Certificado.id_evento == id_evento)
-        queries = session.exec(statement)
-        certificadosDoUsuario = queries.all()
-
-    except:
-        return HTTPException(status_code=404)
-    
-    else:
-        return certificadosDoUsuario
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], 
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/eventos/all")
 async def eventos(session: SessionDep):
@@ -81,35 +53,61 @@ async def eventos(session: SessionDep):
 @app.put("/eventos/editar/{id}")
 async def editar_eventos(id: int, evento: Schemas.Evento, session: SessionDep):
     try:
-        statement = select(Evento).where(Evento.id == id)
-        events = session.exec(statement)
-        event = events.one()
+        event = session.get(Evento, id)
+        
+        if not event:
+            raise HTTPException(status_code=404, detail="Evento não encontrado")
+            
         event.texto = evento.texto
         event.titulo = evento.titulo
         event.data_inicio = evento.data_inicio
         event.data_fim = evento.data_fim
+        
         session.add(event)
         session.commit()
-        session.close()
-
-    except:
-        return HTTPException(status_code=404)
-    
-
-@app.put("/certificados/editar")
-async def editar_certificado(id: int, session: SessionDep, certificado: Schemas.Certificado):
+        return event
+    except Exception as e:
+        print("Erro ao editar evento:", e)
+        raise HTTPException(status_code=500, detail="Erro interno ao editar")
+        
+@app.post("/eventos/adicionar")
+async def criar_evento(evento: Schemas.Evento, session: SessionDep):
     try:
-        certificado_que_quero_editar = session.get(Certificado, id)
-        certificado_que_quero_editar.id_usuario = certificado.id_usuario
-        certificado_que_quero_editar.id_evento = certificado.id_evento
-        session.add(certificado_que_quero_editar)
+        evento_db = Evento.model_validate(evento)
+        session.add(evento_db)
         session.commit()
-        session.close()
-    
-    except:
-        return HTTPException(status_code=404)
+        session.refresh(evento_db)
+        return evento_db
+    except Exception as e:
+        print("Erro ao salvar evento:", e)
+        session.rollback()
+        raise HTTPException(status_code=500, detail="Erro ao salvar no banco")
 
+@app.delete("/eventos/{id}")
+async def deletar_evento(id: int, session: SessionDep):
+    try:
+        dado = session.get(Evento, id)
+        if not dado:
+            raise HTTPException(status_code=404, detail="Evento não encontrado")
+            
+        session.delete(dado)
+        session.commit()
+        from fastapi import Response 
+        return Response(status_code=204)
+    except Exception as e:
+        print("Erro ao deletar evento:", e)
+        raise HTTPException(status_code=500, detail="Erro interno ao deletar")
     
+
+@app.get("/certificados/all")
+async def ler_certificados(session: SessionDep):
+    try:
+        statement = select(Certificado)
+        certificados_db = session.exec(statement).all()
+        return certificados_db
+    except Exception as e:
+        print("Erro ao buscar certificados:", e)
+        raise HTTPException(status_code=500, detail="Erro ao buscar certificados")
 
 @app.post("/certificados/adicionar")
 async def adicionar_certificado(certificado: Schemas.Certificado, session: SessionDep):
@@ -117,9 +115,46 @@ async def adicionar_certificado(certificado: Schemas.Certificado, session: Sessi
         objeto_certificado = Certificado.model_validate(certificado)
         session.add(objeto_certificado)
         session.commit()
+        session.refresh(objeto_certificado)
+        return objeto_certificado
+    except Exception as e:
+        print("Erro ao adicionar certificado:", e)
+        session.rollback()
+        raise HTTPException(status_code=500, detail="Erro ao adicionar")
 
-    except:
-        raise HTTPException(status_code=404)
+@app.put("/certificados/editar/{id}")
+async def editar_certificado(id: int, certificado: Schemas.Certificado, session: SessionDep):
+    try:
+        cert = session.get(Certificado, id)
+        if not cert:
+            raise HTTPException(status_code=404, detail="Certificado não encontrado")
+            
+        cert.id_usuario = certificado.id_usuario
+        cert.id_evento = certificado.id_evento
+        cert.carga_horaria = certificado.carga_horaria
+        
+        session.add(cert)
+        session.commit()
+        session.refresh(cert)
+        return cert
+    except Exception as e:
+        print("Erro ao editar certificado:", e)
+        raise HTTPException(status_code=500, detail="Erro interno ao editar")
+
+@app.delete("/certificados/{id}")
+async def deletar_certificado(id: int, session: SessionDep):
+    try:
+        cert = session.get(Certificado, id)
+        if not cert:
+            raise HTTPException(status_code=404, detail="Certificado não encontrado")
+            
+        session.delete(cert)
+        session.commit()
+        from fastapi import Response
+        return Response(status_code=204)
+    except Exception as e:
+        print("Erro ao deletar certificado:", e)
+        raise HTTPException(status_code=500, detail="Erro interno ao deletar")
 
 @app.get("/participantes/all")
 async def read_participantes(session: SessionDep):
@@ -166,9 +201,10 @@ async def criar_participante(usuario: Schemas.Participante, session: SessionDep)
 @app.put("/participantes/editar/{id}")
 async def editar_participantes(id: int, usuario: Schemas.Participante, session: SessionDep):
     try:
-        statement = select(Usuario).where(Usuario.id == id)
-        users = session.exec(statement)
-        user = users.one()
+        #statement = select(Usuario).where(Usuario.id == id)
+        #users = session.exec(statement)
+        #user = users.one()
+        user = session.get(Usuario, id)
         user.nome = usuario.nome
         user.cpf = usuario.cpf
         session.add(user)
@@ -178,12 +214,11 @@ async def editar_participantes(id: int, usuario: Schemas.Participante, session: 
         raise HTTPException(status_code=404)
       
 @app.delete("/participantes/{id}")
-async def deletar_participante(id:int, usuario: Schemas.Participante, session: SessionDep):
+async def deletar_participante(id:int, session: SessionDep):
     try:
-        declaracao = select(Usuario).where(Usuario.id == id)
-        dado = session.exec(declaracao)
-        del dado #deleta objeto
-        return Response (status_code=204)
+        dado = session.get(Usuario, id)
+        session.delete(dado)
+        session.commit()
         
     except:
         raise HTTPException(status_code=404)

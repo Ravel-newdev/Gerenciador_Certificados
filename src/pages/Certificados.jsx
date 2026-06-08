@@ -1,28 +1,39 @@
 import { useState, useEffect } from "react";
 import Tabela from "../components/Tabela";
-import "../styles/Certificados.css"
+import "../styles/Certificados.css";
+
 const colunas = [
   { key: "id", label: "ID" },
-  { key: "participante", label: "Participante" },
-  { key: "evento", label: "Evento" },
-  { key: "carga_horaria", label: "Carga Horária" },
-];
-
-const dadosMock = [
-  { id: 1, participante: "João Gabriel", evento: "SAC 30", carga_horaria: 20 },
-  { id: 2, participante: "Ceres", evento: "Uweb", carga_horaria: 8 },
+  { key: "id_usuario", label: "ID Participante" }, 
+  { key: "id_evento", label: "ID Evento" }, 
+  { key: "carga_horaria", label: "Carga Horária (h)" },
 ];
 
 function Certificados() {
-  const [certificados, setCertificados] = useState(dadosMock);
+  const [certificados, setCertificados] = useState([]);
   const [modalAberto, setModalAberto] = useState(false);
   const [certificadoEditando, setCertificadoEditando] = useState(null);
-  const [form, setForm] = useState({
-    id_usuario: "",
-    id_evento: "",
-    carga_horaria: "",
-    pdf: null,
-  });
+  const [form, setForm] = useState({ id_usuario: "", id_evento: "", carga_horaria: "" });
+
+  useEffect(() => {
+    carregarCertificados();
+  }, []);
+
+  async function carregarCertificados() {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/versao1/certificados/all");
+      if (response.ok) {
+        const dados = await response.json();
+        const dadosFormatados = dados.map((cert) => ({
+          ...cert,
+          id: cert.id_certificado, 
+        }));
+        setCertificados(dadosFormatados);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar certificados:", error);
+    }
+  }
 
   function abrirModalCriar() {
     setCertificadoEditando(null);
@@ -33,9 +44,9 @@ function Certificados() {
   function abrirModalEditar(item) {
     setCertificadoEditando(item);
     setForm({
-      id_usuario: item.id_usuario || "",
-      id_evento: item.id_evento || "",
-      carga_horaria: item.carga_horaria || "",
+      id_usuario: item.id_usuario,
+      id_evento: item.id_evento,
+      carga_horaria: item.carga_horaria,
     });
     setModalAberto(true);
   }
@@ -49,33 +60,52 @@ function Certificados() {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  function handleSubmit(e) {
-  e.preventDefault();
+  async function handleSubmit(e) {
+    e.preventDefault();
 
-  const formData = new FormData();
-  formData.append("id_usuario", form.id_usuario);
-  formData.append("id_evento", form.id_evento);
-  formData.append("carga_horaria", form.carga_horaria);
-  if (form.pdf) {
-    formData.append("pdf", form.pdf);
-  }
-
-  console.log("Dados a enviar:", [...formData.entries()]);
-  fecharModal();
-  //só fecha o modal, dps muda isso na api
-}
-
-  function handleDeletar(id) {
-    if (window.confirm("Tem certeza que deseja deletar este certificado?")) {
-      setCertificados(certificados.filter((c) => c.id !== id));
+    try {
+      if (certificadoEditando) {
+    
+        await fetch(`http://127.0.0.1:8000/api/versao1/certificados/editar/${certificadoEditando.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        });
+      } else {
+        // Criar - Enviando JSON
+        await fetch("http://127.0.0.1:8000/api/versao1/certificados/adicionar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        });
+      }
+      
+      carregarCertificados();
+      fecharModal();
+    } catch (error) {
+      console.error("Erro ao salvar certificado:", error);
+      alert("Erro ao salvar.");
     }
   }
-  function handleArquivo(e) {
-  setForm({ ...form, pdf: e.target.files[0] });
+
+  async function handleDeletar(id) {
+    if (window.confirm("Tem certeza que deseja deletar este certificado?")) {
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/api/versao1/certificados/${id}`, {
+          method: "DELETE"
+        });
+        
+        if (response.ok) {
+          setCertificados(certificados.filter((c) => c.id !== id));
+        } else {
+          alert("Erro ao deletar o certificado.");
+        }
+      } catch (error) {
+        console.error("Erro ao deletar:", error);
+      }
+    }
   }
-  function handlePDF(item) {
-    alert(`Gerar PDF do certificado #${item.id}`);
-  }
+
   return (
     <div className="pagina">
       <div className="pagina-header">
@@ -90,7 +120,6 @@ function Certificados() {
         dados={certificados}
         onEditar={abrirModalEditar}
         onDeletar={handleDeletar}
-        onPDF={handlePDF}
       />
 
       {modalAberto && (
@@ -104,45 +133,15 @@ function Certificados() {
             <form onSubmit={handleSubmit} className="modal-form">
               <label>
                 ID do Participante
-                <input
-                  type="number"
-                  name="id_usuario"
-                  value={form.id_usuario}
-                  onChange={handleChange}
-                  placeholder="Ex: 1"
-                  required
-                />
+                <input type="number" name="id_usuario" value={form.id_usuario} onChange={handleChange} placeholder="Ex: 1" required />
               </label>
               <label>
                 ID do Evento
-                <input
-                  type="number"
-                  name="id_evento"
-                  value={form.id_evento}
-                  onChange={handleChange}
-                  placeholder="Ex: 1"
-                  required
-                />
+                <input type="number" name="id_evento" value={form.id_evento} onChange={handleChange} placeholder="Ex: 1" required />
               </label>
               <label>
                 Carga Horária (h)
-                <input
-                  type="number"
-                  name="carga_horaria"
-                  value={form.carga_horaria}
-                  onChange={handleChange}
-                  placeholder="Ex: 20"
-                  required
-                />
-              </label>
-              <label>
-                Certificado em PDF
-                <input
-                  type="file"
-                  accept=".pdf"
-                  onChange={handleArquivo}
-                />
-                {form.pdf && (<span className="pdf-selecionado">📄 {form.pdf.name}</span>)}
+                <input type="number" name="carga_horaria" value={form.carga_horaria} onChange={handleChange} placeholder="Ex: 20" required />
               </label>
 
               <div className="modal-botoes">

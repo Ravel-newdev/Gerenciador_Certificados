@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Tabela from "../components/Tabela";
 import "../styles/Participantes.css";
 
@@ -8,16 +8,31 @@ const colunas = [
   { key: "cpf", label: "CPF" },
 ];
 
-const dadosMock = [
-  { id: 1, nome: "Max", cpf: "123.456.789-00" },
-  { id: 2, nome: "Fernando Trinta", cpf: "987.654.321-00" },
-];
-
 function Participantes() {
-  const [participantes, setParticipantes] = useState(dadosMock);
+  const [participantes, setParticipantes] = useState([]);
   const [modalAberto, setModalAberto] = useState(false);
   const [editando, setEditando] = useState(null);
   const [form, setForm] = useState({ nome: "", cpf: "" });
+
+  useEffect(() => {
+    carregarParticipantes();
+  }, []);
+
+  async function carregarParticipantes() {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/versao1/participantes/all");
+      if (response.ok) {
+        const dados = await response.json();
+        const dadosFormatados = dados.map((p) => ({
+          ...p,
+          id: p.id_usuario, 
+        }));
+        setParticipantes(dadosFormatados);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar participantes:", error);
+    }
+  }
 
   function abrirModalCriar() {
     setEditando(null);
@@ -40,21 +55,46 @@ function Participantes() {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    if (editando) {
-      setParticipantes(participantes.map((p) =>
-        p.id === editando.id ? { ...p, ...form } : p
-      ));
-    } else {
-      setParticipantes([...participantes, { id: Date.now(), ...form }]);
+    try {
+      if (editando) {
+        await fetch(`http://127.0.0.1:8000/api/versao1/participantes/editar/${editando.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form)
+        });
+      } else {
+        await fetch("http://127.0.0.1:8000/api/versao1/participantes/adicionar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form)
+        });
+      }
+      
+      carregarParticipantes(); 
+      fecharModal();
+    } catch (error) {
+      console.error("Erro ao salvar:", error);
+      alert("Erro ao salvar participante.");
     }
-    fecharModal();
   }
 
-  function handleDeletar(id) {
+  async function handleDeletar(id) {
     if (window.confirm("Tem certeza que deseja deletar este participante?")) {
-      setParticipantes(participantes.filter((p) => p.id !== id));
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/api/versao1/participantes/${id}`, {
+          method: "DELETE"
+        });
+        
+        if (response.ok) {
+          setParticipantes(participantes.filter((p) => p.id !== id));
+        } else {
+          alert("Erro ao deletar o participante.");
+        }
+      } catch (error) {
+        console.error("Erro ao deletar:", error);
+      }
     }
   }
 

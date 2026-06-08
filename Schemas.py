@@ -16,5 +16,5 @@ class Participante(BaseModel):
 class Certificado(BaseModel):
     carga_horaria: int
     id_usuario: int
-    id_evento: int
+    id_evento: int | None = None 
 
