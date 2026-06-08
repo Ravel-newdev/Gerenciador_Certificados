@@ -93,6 +93,7 @@ primeiro por meio de outro terminal , irá abrir o arquivo do frontend , entao i
 ## Routes
 todos possuem todos os endpoints possuem /api/versao1
 ###Endpoints:
+
 GET /participantes/all — mostra a lista de participantes
 
 GET /participantes/{id} — procura os dados de um determinado participante por meio do ID 
